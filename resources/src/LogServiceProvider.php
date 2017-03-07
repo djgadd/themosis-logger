@@ -60,9 +60,9 @@ class LogServiceProvider extends ServiceProvider
           true
         );
 
-        // Add a processor for slack so we know what website we're on
+        // Add a processor for slack so we know what website the message came from
         $slackHandler->pushProcessor(function ($record) {
-          $record['extra']['website'] = esc_url(home_url());
+          $record['extra']['Website'] = esc_url(home_url());
           return $record;
         });
 
