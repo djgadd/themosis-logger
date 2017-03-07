@@ -25,6 +25,10 @@ Create a logger.config.php, and add the following: -
 
 ```
 return [
+  // Channel can be a string or a closure
+  'channel' => function () {
+    return getenv('ENVIRONMENT');
+  },
   'log-file' => 'logs/wordpress.log', // Will put the log file in storage/logs/wordpress.log
   'loggly-token' => '',
   'slack-token' => '',
