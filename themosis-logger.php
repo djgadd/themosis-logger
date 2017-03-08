@@ -140,3 +140,6 @@ container('action')->add('plugins_loaded', function () use ($vars) {
 /*
  * Add extra features below.
  */
+
+// Alias the facade
+class_alias(Com\KeltieCochrane\Logger\Facades\Log::class, 'Log');
