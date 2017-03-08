@@ -4,7 +4,7 @@
  * Plugin Name: Themosis Logger
  * Plugin URI: https://keltiecochrane.com
  * Description: A logger for the Themosis framework
- * Version: 0.0.1
+ * Version: 0.1.0
  * Author: Keltie Cochrane Ltd.
  * Author URI: https://keltiecochrane.com/
  * Text Domain: themosis-logger.
@@ -140,3 +140,6 @@ container('action')->add('plugins_loaded', function () use ($vars) {
 /*
  * Add extra features below.
  */
+
+// Alias the facade
+class_alias(Com\KeltieCochrane\Logger\Facades\Log::class, 'Log');

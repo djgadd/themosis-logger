@@ -11,16 +11,6 @@ Install through composer: -
 
 `composer require keltiecochrane/themosis-logger`
 
-Activate the plugin in WordPress then add it to your theme's class aliases in the theme.config.php file: -
-
-```
-  'aliases' => [
-    ...
-    'Log' => Com\KeltieCochrane\Logger\Facades\Log::class,
-    ...
-  ]
-```
-
 Create a logger.config.php, and add the following: -
 
 ```
@@ -38,7 +28,7 @@ return [
 
 Usage
 -----
-Use the Log facade to access Monolog ([see docs](https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md)), e.g.: -
+Activate the plugin and use the Log facade to access Monolog ([see docs](https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md)), e.g.: -
 
 ```
 Log::error('An error occurred', ['code' => 1, 'message' => 'Oops.']);
