@@ -1,13 +1,12 @@
 <?php
-namespace Com\KeltieCochrane\Logger\Facades;
+namespace KeltieCochrane\Logger;
 
 use Themosis\Facades\Facade;
 
 class Log extends Facade
 {
   /**
-   * Return the igniterService key responsible for the ajax api.
-   *
+   * Return the key the logger is bound to
    * @return string
    */
   protected static function getFacadeAccessor()
