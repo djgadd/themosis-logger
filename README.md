@@ -1,9 +1,8 @@
 Themosis Juicer
 ===============
 
-A WordPress plugin for the Themosis framework that provides a facade to access an
-instance of Monolog. Uses a fingers crossed handler to verbosely log when errors
-occur. Logs to file, Loggly and Slack.
+A ServiceProvider for Themosis that provides logging through Monolog. Similar to
+the Laravel setup, provides support for log files (default), Loggly, and Slack.
 
 Install
 -------
@@ -11,34 +10,27 @@ Install through composer: -
 
 `composer require keltiecochrane/themosis-logger`
 
-Create a logger.config.php, and add the following: -
+Copy the `config/logger.config.php` to your `theme/resources/config` directory,
+and configure as appropriate.
 
-```
-return [
-  // Channel can be a string or a closure
-  'channel' => function () {
-    return getenv('ENVIRONMENT');
-  },
-  'log-file' => 'logs/wordpress.log', // Will put the log file in storage/logs/wordpress.log
-  'loggly-token' => '',
-  'slack-token' => '',
-  'slack-channel' => '#logs', // Will put logs in the #logs channel of your Slack
-];
-```
+Register the service provider in your `theme/resources/config/providers.php` file: -
+
+`KeltieCochrane\Logger\LogServiceProvider::class,`
+
+Register the alias in your `theme/resources/config/theme.php` file: -
+
+`'Log' => KeltieCochrane\Logger\LogFacade::class,`
 
 Usage
 -----
-Activate the plugin and use the Log facade to access Monolog ([see docs](https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md)), e.g.: -
+
+Use the facade to access the Monolog instance, for more info
+[see their docs](https://github.com/Seldaek/monolog/blob/master/doc/01-usage.md),
+eg.:-
 
 ```
 Log::error('An error occurred', ['code' => 1, 'message' => 'Oops.']);
 ```
-
-Todo
-----
-* Unit tests.
-* Admin interface to view logs.
-
 
 Support
 -------
