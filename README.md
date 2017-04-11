@@ -19,7 +19,7 @@ Register the service provider in your `theme/resources/config/providers.php` fil
 
 Register the alias in your `theme/resources/config/theme.php` file: -
 
-`'Log' => KeltieCochrane\Logger\Log::class,`
+`'Log' => KeltieCochrane\Logger\LogFacade::class,`
 
 Usage
 -----
