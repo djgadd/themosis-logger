@@ -3,7 +3,7 @@ namespace KeltieCochrane\Logger;
 
 use Themosis\Facades\Facade;
 
-class Log extends Facade
+class LogFacade extends Facade
 {
   /**
    * Return the key the logger is bound to
