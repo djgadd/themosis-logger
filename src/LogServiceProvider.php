@@ -85,8 +85,8 @@ class LogServiceProvider extends ServiceProvider
   protected function createRotatingFileHandler() : AbstractHandler
   {
     return $this->productionHandler(new RotatingFileHandler(
-      themosis_path('storage').$this->app('config')->get('logger.log-file'),
-      $this->app('config')->get('logger.max-files')
+      themosis_path('storage').$this->app['config']->get('logger.log-file'),
+      $this->app['config']->get('logger.max-files')
     ));
   }
 
@@ -97,7 +97,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function useLogglyHandler() : bool
   {
-    return $this->app('config')->has('logger.loggly-token');
+    return $this->app['config']->has('logger.loggly-token');
   }
 
   /**
@@ -107,7 +107,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function createLogglyHandler() : AbstractHandler
   {
-    return $this->productionHandler(new LogglyHandler($this->app('config')->get('logger.loggly-token')));
+    return $this->productionHandler(new LogglyHandler($this->app['config']->get('logger.loggly-token')));
   }
 
   /**
@@ -117,7 +117,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function useSlackHandler() : bool
   {
-    return $this->app('config')->has('logger.slack-token');
+    return $this->app['config']->has('logger.slack-token');
   }
 
   /**
@@ -137,9 +137,9 @@ class LogServiceProvider extends ServiceProvider
   protected function createSlackHandler(bool $useAttachment = true, string $iconEmoji = null, int $level = Logger::DEBUG, bool $bubble = true, bool $useShortAttachment = false, bool $includeContextAndExtra = true, array $excludeFields = []) : AbstractHandler
   {
     $handler = new SlackHandler(
-      $this->app('config')->get('logger.slack-token'),
-      $this->app('config')->get('logger.slack-channel', '#logs'),
-      $this->app('config')->get('logger.slack-username', 'Logger'),
+      $this->app['config']->get('logger.slack-token'),
+      $this->app['config']->get('logger.slack-channel', '#logs'),
+      $this->app['config']->get('logger.slack-username', 'Logger'),
       $useAttachment,
       $iconEmoji,
       $level,
