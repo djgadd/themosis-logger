@@ -3,7 +3,6 @@
 namespace KeltieCochrane\Logger;
 
 use Monolog\Logger;
-use Themosis\Facades\Config;
 use Monolog\Handler\SlackHandler;
 use Monolog\Handler\LogglyHandler;
 use Monolog\Handler\AbstractHandler;
@@ -27,7 +26,7 @@ class LogServiceProvider extends ServiceProvider
   public function register()
   {
     $this->app->singleton('log', function ($app) {
-      $channel = Config::get('logger.channel') ?: 'production';
+      $channel = $app['config']->get('logger.channel', 'production');
 
       // Create a logger
       $logger = new Logger($channel);
@@ -57,7 +56,7 @@ class LogServiceProvider extends ServiceProvider
   protected function inProduction() : bool
   {
     // Check if we're in production, if we don't have a value return true anyway
-    if (Config::get('logger.environment') === 'production' || empty(Config::get('logger.environment'))) {
+    if (container('config')->get('logger.environment', 'production') === 'production') {
       return true;
     }
 
@@ -86,8 +85,8 @@ class LogServiceProvider extends ServiceProvider
   protected function createRotatingFileHandler() : AbstractHandler
   {
     return $this->productionHandler(new RotatingFileHandler(
-      themosis_path('storage').Config::get('logger.log-file'),
-      Config::get('logger.max-files')
+      themosis_path('storage').$this->app('config')->get('logger.log-file'),
+      $this->app('config')->get('logger.max-files')
     ));
   }
 
@@ -98,7 +97,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function useLogglyHandler() : bool
   {
-    return !empty(Config::get('logger.loggly-token'));
+    return $this->app('config')->has('logger.loggly-token');
   }
 
   /**
@@ -108,7 +107,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function createLogglyHandler() : AbstractHandler
   {
-    return $this->productionHandler(new LogglyHandler(Config::get('logger.loggly-token')));
+    return $this->productionHandler(new LogglyHandler($this->app('config')->get('logger.loggly-token')));
   }
 
   /**
@@ -118,7 +117,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function useSlackHandler() : bool
   {
-    return !empty(Config::get('logger.slack-token')) && !empty(Config::get('logger.slack-channel'));
+    return $this->app('config')->has('logger.slack-token');
   }
 
   /**
@@ -126,7 +125,6 @@ class LogServiceProvider extends ServiceProvider
    * what website it came form (useful when multiple loggers are outputting in
    * the same channel)
    *
-   * @param string $username
    * @param bool $useAttachment
    * @param string $iconEmoji
    * @param int $level
@@ -136,12 +134,12 @@ class LogServiceProvider extends ServiceProvider
    * @param array $excludeFields
    * @return \Monolog\Handler\AbstractHandler
    */
-  protected function createSlackHandler(string $username = 'Logger', bool $useAttachment = true, string $iconEmoji = null, int $level = Logger::DEBUG, bool $bubble = true, bool $useShortAttachment = false, bool $includeContextAndExtra = true, array $excludeFields = []) : AbstractHandler
+  protected function createSlackHandler(bool $useAttachment = true, string $iconEmoji = null, int $level = Logger::DEBUG, bool $bubble = true, bool $useShortAttachment = false, bool $includeContextAndExtra = true, array $excludeFields = []) : AbstractHandler
   {
     $handler = new SlackHandler(
-      Config::get('logger.slack-token'),
-      Config::get('logger.slack-channel'),
-      $username,
+      $this->app('config')->get('logger.slack-token'),
+      $this->app('config')->get('logger.slack-channel', '#logs'),
+      $this->app('config')->get('logger.slack-username', 'Logger'),
       $useAttachment,
       $iconEmoji,
       $level,
