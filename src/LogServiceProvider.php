@@ -9,6 +9,7 @@ use Monolog\Handler\AbstractHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Themosis\Foundation\ServiceProvider;
 use Monolog\Handler\FingersCrossedHandler;
+use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
 
 class LogServiceProvider extends ServiceProvider
 {
@@ -49,42 +50,23 @@ class LogServiceProvider extends ServiceProvider
   }
 
   /**
-   * Determines whether we're in production mode
+   * Wraps handlers in FingersCrossedHandler appropriate to environment
    *
-   * @return bool
+   * @return \Monolog\Handler\FingersCrossedHandler
    */
-  protected function inProduction() : bool
+  protected function fingersCrossedHandler(AbstractHandler $handler) : FingersCrossedHandler
   {
-    // Check if we're in production, if we don't have a value return true anyway
-    if (container('config')->get('logger.environment', 'production') === 'production') {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * If we're inProduction then wrap the handler in a FingersCrossedHandler
-   *
-   * @return \Monolog\Handler\AbstractHandler
-   */
-  protected function productionHandler(AbstractHandler $handler) : AbstractHandler
-  {
-    if ($this->inProduction()) {
-      return new FingersCrossedHandler($handler);
-    }
-
-    return $handler;
+    return new FingersCrossedHandler($handler, new ErrorLevelActivationStrategy(app('config')->get('logger.level')));
   }
 
   /**
    * Creates a RotatingFileHandler
    *
-   * @return \Monolog\Handler\AbstractHandler
+   * @return \Monolog\Handler\FingersCrossedHandler
    */
-  protected function createRotatingFileHandler() : AbstractHandler
+  protected function createRotatingFileHandler() : FingersCrossedHandler
   {
-    return $this->productionHandler(new RotatingFileHandler(
+    return $this->fingersCrossedHandler(new RotatingFileHandler(
       themosis_path('storage').$this->app['config']->get('logger.log-file'),
       $this->app['config']->get('logger.max-files')
     ));
@@ -103,11 +85,11 @@ class LogServiceProvider extends ServiceProvider
   /**
    * Creates a LogglyHandler
    *
-   * @return \Monolog\Handler\AbstractHandler
+   * @return \Monolog\Handler\FingersCrossedHandler
    */
-  protected function createLogglyHandler() : AbstractHandler
+  protected function createLogglyHandler() : FingersCrossedHandler
   {
-    return $this->productionHandler(new LogglyHandler($this->app['config']->get('logger.loggly-token')));
+    return $this->fingersCrossedHandler(new LogglyHandler($this->app['config']->get('logger.loggly-token')));
   }
 
   /**
@@ -132,14 +114,14 @@ class LogServiceProvider extends ServiceProvider
    * @param bool $useShortAttachment
    * @param bool $includeContextAndExtra
    * @param array $excludeFields
-   * @return \Monolog\Handler\AbstractHandler
+   * @return \Monolog\Handler\FingersCrossedHandler
    */
-  protected function createSlackHandler(bool $useAttachment = true, string $iconEmoji = null, int $level = Logger::DEBUG, bool $bubble = true, bool $useShortAttachment = false, bool $includeContextAndExtra = true, array $excludeFields = []) : AbstractHandler
+  protected function createSlackHandler(bool $useAttachment = true, string $iconEmoji = null, int $level = Logger::DEBUG, bool $bubble = true, bool $useShortAttachment = false, bool $includeContextAndExtra = true, array $excludeFields = []) : FingersCrossedHandler
   {
     $handler = new SlackHandler(
       $this->app['config']->get('logger.slack-token'),
       $this->app['config']->get('logger.slack-channel', '#logs'),
-      $this->app['config']->get('logger.slack-username', 'Logger'),
+      strtolower($this->app['config']->get('logger.slack-username', 'logger')),
       $useAttachment,
       $iconEmoji,
       $level,
@@ -155,7 +137,7 @@ class LogServiceProvider extends ServiceProvider
       return $record;
     });
 
-    return $this->productionHandler($handler);
+    return $this->fingersCrossedHandler($handler);
   }
 
   /**

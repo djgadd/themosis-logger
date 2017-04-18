@@ -11,12 +11,12 @@ return [
 
   /*
   |--------------------------------------------------------------------------
-  | Production
+  | level
   |--------------------------------------------------------------------------
-  | Enabling this will wrap all handlers in a FingersCrossedHandler (so you won't
-  | get verbose logging unless an error is triggered.)
+  | Use the defined monolog levels to decide what level you would like the fingers
+  | crossed handler to trigger at.
   */
-  'environment' => env('ENVIRONMENT', 'production'),
+  'level' => env('LOG_LEVEL', 'error'),
 
   /*
   |--------------------------------------------------------------------------
@@ -47,5 +47,5 @@ return [
   */
   'slack-token' => env('SLACK_TOKEN'),
   'slack-channel' => env('SLACK_CHANNEL', '#logs'),
-  'slack-username' => env('SLACK_USERNAME', 'Logger'),
+  'slack-username' => env('SLACK_USERNAME', 'logger'),
 ];
