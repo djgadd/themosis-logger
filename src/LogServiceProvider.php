@@ -56,7 +56,7 @@ class LogServiceProvider extends ServiceProvider
    */
   protected function fingersCrossedHandler(AbstractHandler $handler) : FingersCrossedHandler
   {
-    return new FingersCrossedHandler($handler, new ErrorLevelActivationStrategy(app('config')->get('logger.level')));
+    return new FingersCrossedHandler($handler, new ErrorLevelActivationStrategy(app('config')->get('logger.level', 'error')));
   }
 
   /**
